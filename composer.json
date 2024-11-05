@@ -1,0 +1,51 @@
+{
+    "version": "0.1.0",
+    "name": "endeavour-agency/laravel-query-insights",
+    "description": "This packages aims to provide insights into performed queries. Multiple handlers exist to control what should be done with the query data.",
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/endeavour-agency/laravel-query-insights",
+    "keywords": [
+        "laravel",
+        "query",
+        "log",
+        "queries",
+        "database",
+        "lighthouse",
+        "graphql"
+    ],
+    "authors": [
+        {
+            "name": "Dennis Koster",
+            "email": "dennis.koster@endeavour.nl",
+            "homepage": "https://github.com/dennis-koster"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "EndeavourAgency\\LaravelQueryInsights\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^11"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.3",
+        "mockery/mockery": "^1.6",
+        "orchestra/testbench": "^9",
+        "nuwave/lighthouse": "^6.45"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "EndeavourAgency\\LaravelQueryInsights\\Providers\\LaravelQueryInsightsProvider"
+            ]
+        }
+    }
+}
