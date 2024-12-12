@@ -10,11 +10,34 @@ use Illuminate\Database\Connection;
 class Query implements Arrayable
 {
     public function __construct(
-        public readonly string $sql,
-        public readonly array $bindings,
-        public readonly float | null $time,
-        public readonly Connection $connection,
+        protected readonly string $sql,
+        protected readonly array $bindings,
+        protected readonly float | null $time,
+        protected readonly Connection $connection,
     ) {
+    }
+
+    public function getSql(): string
+    {
+        return $this->sql;
+    }
+
+    public function getBindings(): array
+    {
+        return $this->bindings;
+    }
+
+    public function getTime(): ?float
+    {
+        return $this->time;
+    }
+
+    public function toRawSql(): string
+    {
+        return $this->connection
+            ->query()
+            ->getGrammar()
+            ->substituteBindingsIntoRawSql($this->sql, $this->connection->prepareBindings($this->bindings));
     }
 
     public function toArray(): array
@@ -25,13 +48,5 @@ class Query implements Arrayable
             'bindings' => $this->bindings,
             'time'     => $this->time,
         ];
-    }
-
-    public function toRawSql(): string
-    {
-        return $this->connection
-            ->query()
-            ->getGrammar()
-            ->substituteBindingsIntoRawSql($this->sql, $this->connection->prepareBindings($this->bindings));
     }
 }

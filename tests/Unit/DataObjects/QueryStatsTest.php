@@ -49,13 +49,30 @@ class QueryStatsTest extends AbstractUnitTestCase
     }
 
     #[Test]
+    public function it_returns_the_query_time(): void
+    {
+        $queryStats = new QueryStats(
+            Mockery::mock(Request::class),
+        );
+
+        $query1 = Mockery::mock(Query::class, ['getTime' => 0.75]);
+        $query2 = Mockery::mock(Query::class, ['getTime' => 0.4]);
+
+        $queryStats
+            ->addQuery($query1)
+            ->addQuery($query2);
+
+        static::assertSame(1.15, $queryStats->getTime());
+    }
+
+    #[Test]
     public function it_casts_query_stats_to_an_array(): void
     {
         $queryStats = new QueryStats(
             Mockery::mock(Request::class),
         );
 
-        $query1 = Mockery::mock(Query::class);
+        $query1 = Mockery::mock(Query::class, ['getTime' => 0.75]);
         $query1
             ->shouldReceive('toArray')
             ->once()
@@ -68,7 +85,7 @@ class QueryStatsTest extends AbstractUnitTestCase
                 'time'     => 0.75,
             ]);
 
-        $query2 = Mockery::mock(Query::class);
+        $query2 = Mockery::mock(Query::class, ['getTime' => 0.4]);
         $query2
             ->shouldReceive('toArray')
             ->once()
@@ -87,8 +104,8 @@ class QueryStatsTest extends AbstractUnitTestCase
 
         $castedQueryStats = $queryStats->toArray();
 
-        static::assertSame(
-            [
+        static::assertSame([
+            'queries'    => [
                 [
                     'query'    => 'select * from `users` where `id` = 15 limit 1',
                     'sql'      => 'select * from `users` where `id` = ? limit 1',
@@ -106,6 +123,8 @@ class QueryStatsTest extends AbstractUnitTestCase
                     'time'     => 0.4,
                 ],
             ],
+            'query-time' => 1.15,
+        ],
             $castedQueryStats,
         );
     }

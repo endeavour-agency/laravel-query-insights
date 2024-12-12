@@ -26,6 +26,15 @@ class QueryStats implements Arrayable
         return $this->queries;
     }
 
+    public function getTime(): float | null
+    {
+        if ($this->queries->isEmpty()) {
+            return null;
+        }
+
+        return $this->queries->sum(fn (Query $query) => $query->getTime());
+    }
+
     public function addQuery(Query $query): self
     {
         $this->queries->push($query);
@@ -38,8 +47,17 @@ class QueryStats implements Arrayable
         return $this->request;
     }
 
+    /**
+     * @return array{
+     *     query: array<int, Query>,
+     *     time: float | null
+     * }
+     */
     public function toArray(): array
     {
-        return $this->queries->toArray();
+        return [
+            'queries'    => $this->queries->toArray(),
+            'query-time' => $this->getTime(),
+        ];
     }
 }
