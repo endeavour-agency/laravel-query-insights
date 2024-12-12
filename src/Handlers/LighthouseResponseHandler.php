@@ -20,7 +20,7 @@ class LighthouseResponseHandler extends AbstractHandler
             return;
         }
 
-        $event->result->extensions['queries'] = $queryStats->toArray();
+        $event->result->extensions += $queryStats->toArray();
     }
 
     public function eventTrigger(): string

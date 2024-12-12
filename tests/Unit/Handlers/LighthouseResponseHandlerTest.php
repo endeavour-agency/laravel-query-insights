@@ -35,9 +35,10 @@ class LighthouseResponseHandlerTest extends AbstractUnitTestCase
         $queryStats
             ->shouldReceive('toArray')
             ->andReturn([
-                'foo' => [
+                'queries'    => [
                     'bar' => 'test',
                 ],
+                'query-time' => 0.5,
             ]);
 
         $handler->handle(
@@ -46,11 +47,10 @@ class LighthouseResponseHandlerTest extends AbstractUnitTestCase
         );
 
         static::assertSame([
-            'queries' => [
-                'foo' => [
-                    'bar' => 'test',
-                ],
+            'queries'    => [
+                'bar' => 'test',
             ],
+            'query-time' => 0.5,
         ], $event->result->extensions);
     }
 }
