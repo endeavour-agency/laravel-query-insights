@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace EndeavourAgency\LaravelQueryInsights\Handlers;
 
+use EndeavourAgency\LaravelQueryInsights\Contracts\Formatters\QueryStatsFormatterInterface;
 use EndeavourAgency\LaravelQueryInsights\DataObjects\QueryStats;
-use Illuminate\Contracts\Config\Repository;
+use EndeavourAgency\LaravelQueryInsights\Formatters\SimpleArrayFormatter;
+use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Http\Request;
 use Psr\Log\LoggerInterface;
@@ -13,7 +15,7 @@ use Psr\Log\LoggerInterface;
 class LogHandler extends AbstractHandler
 {
     public function __construct(
-        protected Repository $config,
+        protected Config $config,
         protected LoggerInterface $logger,
     ) {
         parent::__construct($this->config);
@@ -21,9 +23,10 @@ class LogHandler extends AbstractHandler
 
     public function handle(QueryStats $queryStats, $event): void
     {
-        $this->logger->info('Queries: ' . $this->stringifyRequest($queryStats->getRequest()), [
-            'queries' => $queryStats->getQueries()->toArray(),
-        ]);
+        $this->logger->info(
+            'Queries: ' . $this->stringifyRequest($queryStats->getRequest()),
+            $this->getFormatter()->format($queryStats),
+        );
     }
 
     protected function stringifyRequest(Request $request): string
@@ -34,5 +37,10 @@ class LogHandler extends AbstractHandler
     public function eventTrigger(): string
     {
         return RequestHandled::class;
+    }
+
+    protected function getDefaultFormatter(): QueryStatsFormatterInterface
+    {
+        return new SimpleArrayFormatter();
     }
 }

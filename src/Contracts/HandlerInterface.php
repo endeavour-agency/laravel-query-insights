@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EndeavourAgency\LaravelQueryInsights\Contracts;
 
+use EndeavourAgency\LaravelQueryInsights\Contracts\Formatters\QueryStatsFormatterInterface;
 use EndeavourAgency\LaravelQueryInsights\DataObjects\QueryStats;
 
 interface HandlerInterface
@@ -31,4 +32,6 @@ interface HandlerInterface
      * @return bool
      */
     public function shouldRun(): bool;
+
+    public function setFormatter(QueryStatsFormatterInterface $formatter): self;
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Handlers;
 
+use EndeavourAgency\LaravelQueryInsights\Contracts\Formatters\QueryStatsFormatterInterface;
 use EndeavourAgency\LaravelQueryInsights\DataObjects\QueryStats;
 use EndeavourAgency\LaravelQueryInsights\Handlers\LighthouseResponseHandler;
 use GraphQL\Executor\ExecutionResult;
@@ -27,13 +28,21 @@ class LighthouseResponseHandlerTest extends AbstractUnitTestCase
     #[Test]
     public function it_adds_queries_to_the_lighthouse_response(): void
     {
-        $config  = Mockery::mock(Config::class);
-        $handler = new LighthouseResponseHandler($config);
+        $config    = Mockery::mock(Config::class);
+        $formatter = Mockery::mock(QueryStatsFormatterInterface::class);
+
+        $handler = new LighthouseResponseHandler(
+            $config,
+        );
+        $handler->setFormatter($formatter);
         $event   = new BuildExtensionsResponse(new ExecutionResult([]));
 
         $queryStats = Mockery::mock(QueryStats::class);
-        $queryStats
-            ->shouldReceive('toArray')
+
+        $formatter
+            ->shouldReceive('format')
+            ->once()
+            ->with($queryStats)
             ->andReturn([
                 'queries'    => [
                     'bar' => 'test',
